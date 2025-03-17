@@ -45,13 +45,13 @@ st.title("🏏 Cricket Player Auction Dashboard")
 col1, col2 = st.columns([3, 2])
 
 with col1:
-    st.subheader("🏆 Sold Players by Team")
+    st.subheader("🏆 Sold Players by Team (Editable)")
     sold_players_data = {team: [] for team in teams.keys()}
     for team, players_sold in st.session_state.sold_players.items():
         sold_players_data[team] = players_sold
     
     sold_df = pd.DataFrame(dict([(k, pd.Series(v)) for k, v in sold_players_data.items()]))
-    st.dataframe(sold_df.fillna("-"), width=900)
+    edited_sold_df = st.experimental_data_editor(sold_df.fillna("-"), width=900)
     
     st.subheader("📋 Remaining Players")
     remaining_players_data = {cat: st.session_state.remaining_players[cat] for cat in st.session_state.remaining_players}
