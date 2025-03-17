@@ -45,17 +45,16 @@ header_col1, header_col2 = st.columns([3, 2])
 
 with header_col1:
     st.subheader("🏆 Sold Players by Team")
-    sold_players_data = []
+    sold_players_data = {team: [] for team in teams.keys()}
     for team, players_sold in st.session_state.sold_players.items():
-        for player in players_sold:
-            sold_players_data.append([team, player])
-    sold_df = pd.DataFrame(sold_players_data, columns=["Team", "Player (Bid in Cr)"])
-    st.dataframe(sold_df, width=700)
+        sold_players_data[team] = players_sold
+    
+    sold_df = pd.DataFrame(dict([(k, pd.Series(v)) for k, v in sold_players_data.items()]))
+    st.dataframe(sold_df.fillna("-"), width=800)
 
 with header_col2:
     category = st.selectbox("Select a category", list(players.keys()))
-    if st.button("Next Player ➡️", key="next_player_button"):
-        pass  # Placeholder for logic execution
+    next_player_button = st.button("Next Player ➡️", key="next_player_button")
 
 col1, col2 = st.columns([3, 2])
 
@@ -63,7 +62,7 @@ with col1:
     # Get unsold players from the selected category
     unsold_players = [p for p in players[category] if not any(p in team for team in st.session_state.sold_players.values())]
 
-    if "current_player" not in st.session_state or st.button("Next Player 🎯", key="new_player_button"):
+    if "current_player" not in st.session_state or next_player_button:
         if unsold_players:
             st.session_state.current_player = random.choice(unsold_players)
         else:
@@ -104,9 +103,6 @@ with col2:
 
     # Display remaining players category-wise
     st.subheader("📋 Remaining Players")
-    for cat, cat_players in players.items():
-        remaining = [p for p in cat_players if not any(p in team for team in st.session_state.sold_players.values())]
-        if remaining:
-            st.write(f"**{cat}**: {', '.join(remaining)}")
-        else:
-            st.write(f"**{cat}**: ✅ All players sold!")
+    remaining_players_data = {cat: [p for p in cat_players if not any(p in team for team in st.session_state.sold_players.values())] for cat, cat_players in players.items()}
+    remaining_df = pd.DataFrame(dict([(k, pd.Series(v)) for k, v in remaining_players_data.items()]))
+    st.dataframe(remaining_df.fillna("-"), width=800)
