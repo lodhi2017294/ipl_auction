@@ -1,3 +1,6 @@
+import os
+print(os.listdir())  # Check if google_credentials.json exists
+
 import streamlit as st
 import random
 import pandas as pd
