@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "velvety-folder-403710",
+  "private_key_id": "48e75b97c08e6e57ea6d7436a40d4c8ebb39bb68",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDiCKCp85EyvjF3\nVBt7gSbT0LzCD/zU+TimjGmQ9JR/NYOz5YcuibfrlxlhPqTY98HofduKO6TdbOqw\nxs7lgF/OEQT5yj3f04EygfuZxzxRJSPx1KPTka3uRENC01BZjEvw5QKP2LmwMsom\neUNIjYpYrOcW/Fdq3rTOT5vKrtIVk7b4O4NmpaqvfNyW4mdaXuc2d7GJH54VDaJX\nmj8XihsUw6B0V4V7IzeNh5SLFWln5mTj5pRz4P4GxHm5oHTh6fK/WHaS6hVb1hE6\nlVOxawgPFvOveZu7VN8VLSWjTOycUycm69JvciqEBlgupyUFSF03vPm5aCCjBZVP\nTZ0uirZZAgMBAAECggEAHuCVggyXKIVkIIGe13pHIZGsQh5eUtb7btT+Ps0KfsOC\ntaUvQvjmj7UDxI2the4ie8NlpYvhnlXt9tl8aKGRdNxM/7Upn//hRahirxkmcOH6\nomMtQLjv4lKflZYPAzdFJdKYTP+K2OUMnxYwTiL3uTFgHXsPPgwk9YyueDugJfjW\noSmptoAyhPObepgQaUk5xaQorvzf93lQUiFN8hbouVwdJbGDTGLUJmfn6wS7IcKy\n42CWhyY7bjDfWA8nTNLbpP2QkksNhmifGnYX3LkOAfJ+pAPM2lVE3muOSNcRT5b7\nvniWApBXvDKuVgSKGlDbyyhpkcwuURHfMEsjAn4u2QKBgQD//278+DyKOqBViJvp\nWgcXu1SNAoTboAHzJXQI00q78BqGcQCqYEyB0UuzmbzRfUUlrtjaPw/g2OObPRXd\nVv08qwl0HEBm8jjjB8ZLcjfp6q0AkZeS7OP/nCM2uCWk02/WbAz8na+1GmSd4u9N\nR44Mj7/LFOmmcr8ahU1eQbum/wKBgQDiCSCzzA1AQlv9sxInamvQz0jIg1G4XN//\nUMGmvOSvB4vOVmq/ozuAOkdACrNeQVpyVSbpn8JEJsJX1dt+20Cm/E/D/1Z5vLm2\nhtfjKiWP3SQkdPN9lXn9KcMEWnaKfLjSy3vwx68jmM0jcpUCwuxyvaOQcy9EL1EX\nKPIQSbU6pwKBgQCzXOcIu2y/dQAtrb9/qiJaEFjXS7KGpv92uwEnxdMRBtOu6rIK\nrdotAtXFiqvvI5Q1KOKrV4/qfExM0mnlYTOhND01ay38cy5Ec4gOCIMAk/qO8XN/\n8BZ3W5CYoEFP0Q0E8UPQIzOe8lUZAo2kWcQ/LOC2i3qBstgO3uMsbWXrRQKBgQC5\nNquCSHCPOBDy2HnGrHA+AKvuCZS70faF2eFkRCHKvg8z+yGreBC4aIiblGkXkcuQ\nJfAlvQ/NEklq+cTKtNPMQLEHtEFirV8rjmB2NsHimV0VNnOScxordL3k4k+B+OLl\nb3FWgfkj3QAyzKAHTDu9ZWESax/O6kqzBI0dBZinvwKBgBKj5SBbbkw+xETl5R+Q\nceApCPPcHx4apMiTnHQTQJZiWHuJ31ml4Y57RU3fe4T3GTEstd7W6Ee5oumxNcMl\nxrSuvRPTEM+KB91hKG8SNc5k+HEIRASBEHQbW9AH/FVmM9Nu27fUmo3PyFSKHFDS\nkbA75ylCAOJxOGS9KirtYifl\n-----END PRIVATE KEY-----\n",
+  "client_email": "streamlit-auction-service@velvety-folder-403710.iam.gserviceaccount.com",
+  "client_id": "114197490509524914433",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/streamlit-auction-service%40velvety-folder-403710.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
