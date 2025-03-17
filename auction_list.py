@@ -45,20 +45,16 @@ header_col1, header_col2 = st.columns([3, 2])
 
 with header_col1:
     st.subheader("🏆 Sold Players by Team")
-    team_columns = st.columns(4)  # Create 4 columns for each team
-    
-    for idx, (team, players_sold) in enumerate(st.session_state.sold_players.items()):
-        with team_columns[idx]:
-            st.write(f"### {team}")
-            if players_sold:
-                for player in players_sold:
-                    st.write(f"- {player}")
-            else:
-                st.write("No players sold yet.")
+    sold_players_data = []
+    for team, players_sold in st.session_state.sold_players.items():
+        for player in players_sold:
+            sold_players_data.append([team, player])
+    sold_df = pd.DataFrame(sold_players_data, columns=["Team", "Player (Bid in Cr)"])
+    st.dataframe(sold_df, width=700)
 
 with header_col2:
     category = st.selectbox("Select a category", list(players.keys()))
-    if st.button("Next Player ➡️"):
+    if st.button("Next Player ➡️", key="next_player_button"):
         pass  # Placeholder for logic execution
 
 col1, col2 = st.columns([3, 2])
@@ -67,7 +63,7 @@ with col1:
     # Get unsold players from the selected category
     unsold_players = [p for p in players[category] if not any(p in team for team in st.session_state.sold_players.values())]
 
-    if "current_player" not in st.session_state or st.button("Next Player ➡️"):
+    if "current_player" not in st.session_state or st.button("Next Player 🎯", key="new_player_button"):
         if unsold_players:
             st.session_state.current_player = random.choice(unsold_players)
         else:
@@ -84,7 +80,7 @@ with col1:
         bid_amount = st.number_input("Enter bid amount (in crores):", min_value=0.1, max_value=st.session_state.team_budgets[team_name], step=0.1)
 
         # Sell player button
-        if st.button("Sell Player ✅"):
+        if st.button("Sell Player ✅", key="sell_button"):
             if team_name and bid_amount <= st.session_state.team_budgets[team_name]:
                 # Save data to session state
                 st.session_state.sold_players[team_name].append(f"{selected_player} ({bid_amount} cr)")
