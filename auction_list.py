@@ -40,13 +40,30 @@ if not st.session_state.get("initialized", False):
 st.set_page_config(layout="wide")
 st.title("🏏 Cricket Player Auction Dashboard")
 
-# Full-width layout
+# Layout setup
+header_col1, header_col2 = st.columns([3, 2])
+
+with header_col1:
+    st.subheader("🏆 Sold Players by Team")
+    team_columns = st.columns(4)  # Create 4 columns for each team
+    
+    for idx, (team, players_sold) in enumerate(st.session_state.sold_players.items()):
+        with team_columns[idx]:
+            st.write(f"### {team}")
+            if players_sold:
+                for player in players_sold:
+                    st.write(f"- {player}")
+            else:
+                st.write("No players sold yet.")
+
+with header_col2:
+    category = st.selectbox("Select a category", list(players.keys()))
+    if st.button("Next Player ➡️"):
+        pass  # Placeholder for logic execution
+
 col1, col2 = st.columns([3, 2])
 
 with col1:
-    # Category Selection
-    category = st.selectbox("Select a category", list(players.keys()))
-
     # Get unsold players from the selected category
     unsold_players = [p for p in players[category] if not any(p in team for team in st.session_state.sold_players.values())]
 
@@ -80,6 +97,15 @@ with col1:
     elif len(unsold_players) == 0:
         st.warning(f"⚠️ All players in **{category}** have been sold.")
 
+    if all(len(team) == 0 for team in st.session_state.sold_players.values()) and all(len(p) == 0 for p in players.values()):
+        st.success("🎉 All marquee players have been auctioned! No more players left.")
+
+with col2:
+    # Display remaining team budgets
+    st.subheader("💰 Remaining Purse of Teams")
+    budget_df = pd.DataFrame(st.session_state.team_budgets.items(), columns=["Team", "Remaining Budget (crores)"])
+    st.dataframe(budget_df, width=700)
+
     # Display remaining players category-wise
     st.subheader("📋 Remaining Players")
     for cat, cat_players in players.items():
@@ -88,22 +114,3 @@ with col1:
             st.write(f"**{cat}**: {', '.join(remaining)}")
         else:
             st.write(f"**{cat}**: ✅ All players sold!")
-
-with col2:
-    # Display remaining team budgets
-    st.subheader("💰 Remaining Purse of Teams")
-    budget_df = pd.DataFrame(st.session_state.team_budgets.items(), columns=["Team", "Remaining Budget (crores)"])
-    st.dataframe(budget_df, width=700)
-
-    # Display sold players categorized by team
-    st.subheader("🏆 Sold Players by Team")
-    team_columns = st.columns(4)  # Create 4 columns for each team
-    
-    for idx, (team, players_sold) in enumerate(st.session_state.sold_players.items()):
-        with team_columns[idx]:
-            st.write(f"### {team}")
-            if players_sold:
-                for player in players_sold:
-                    st.write(f"- {player}")
-            else:
-                st.write("No players sold yet.")
