@@ -31,13 +31,12 @@ players = {
 # Allowed Teams
 teams = ["Vishal", "Vaibhav", "Vishnu", "Jaggu"]
 
-# Initialize session state for tracking sold players
+# Initialize session state for tracking sold players and team budgets
 if "sold_players" not in st.session_state:
     st.session_state.sold_players = {}
-if "last_sold_player" not in st.session_state:
-    st.session_state.last_sold_player = None
+if "team_budget" not in st.session_state:
+    st.session_state.team_budget = {team: 120 for team in teams}  # 120 crore per team
 
-# Streamlit UI
 st.title("🏏 Cricket Player Auction Dashboard")
 
 # Category Selection
@@ -46,7 +45,6 @@ category = st.selectbox("Select a category", list(players.keys()))
 # Get unsold players from the selected category
 unsold_players = [p for p in players[category] if p not in st.session_state.sold_players]
 
-# Auction Logic
 if unsold_players:
     # Pick a random unsold player
     selected_player = random.choice(unsold_players)
@@ -55,26 +53,31 @@ if unsold_players:
     # Dropdown for team selection
     team_name = st.selectbox("Select the team buying this player:", teams)
 
+    # Input for bid amount
+    bid_amount = st.number_input("Enter bid amount (in crores):", min_value=1, max_value=120, step=1)
+
     # Sell player button
     if st.button("Sell Player"):
-        if team_name:  # Ensure a team is selected
-            st.session_state.sold_players[selected_player] = team_name
-            st.session_state.last_sold_player = selected_player
-            st.success(f"✅ {selected_player} sold to {team_name}!")
+        if team_name and selected_player and bid_amount <= st.session_state.team_budget[team_name]:
+            # Deduct amount from team's budget
+            st.session_state.team_budget[team_name] -= bid_amount
+            st.session_state.sold_players[selected_player] = {"Team": team_name, "Bid": bid_amount}
+            st.success(f"✅ {selected_player} sold to {team_name} for {bid_amount} crore!")
             st.experimental_rerun()  # Refresh the page to pick next player
         else:
-            st.error("⚠️ Please select a valid team before selling the player.")
+            st.error("⚠️ Invalid bid amount or insufficient budget!")
 else:
     st.warning(f"⚠️ All players in **{category}** have been sold.")
 
-# Display last sold player to avoid re-selection issue
-if st.session_state.last_sold_player:
-    st.write(f"**Last sold player:** {st.session_state.last_sold_player}")
+# Display team budgets
+st.subheader("💰 Team Budgets")
+budget_df = pd.DataFrame(st.session_state.team_budget.items(), columns=["Team", "Remaining Budget (crores)"])
+st.dataframe(budget_df)
 
 # Display sold players in a table
 st.subheader("🏆 Sold Players")
 if st.session_state.sold_players:
-    sold_df = pd.DataFrame(list(st.session_state.sold_players.items()), columns=["Player", "Team"])
+    sold_df = pd.DataFrame([{**{"Player": k}, **v} for k, v in st.session_state.sold_players.items()])
     st.dataframe(sold_df)
 else:
     st.info("No players have been sold yet.")
