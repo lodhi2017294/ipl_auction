@@ -19,6 +19,7 @@ service_account_info = {
   "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/streamlit-auction-service%40velvety-folder-403710.iam.gserviceaccount.com",
   "universe_domain": "googleapis.com"
 }
+
 # Google Sheets Authentication
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
 creds = ServiceAccountCredentials.from_json_keyfile_dict(service_account_info, scope)
