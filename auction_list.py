@@ -34,6 +34,8 @@ teams = ["Vishal", "Vaibhav", "Vishnu", "Jaggu"]
 # Initialize session state for tracking sold players
 if "sold_players" not in st.session_state:
     st.session_state.sold_players = {}
+if "last_sold_player" not in st.session_state:
+    st.session_state.last_sold_player = None
 
 # Streamlit UI
 st.title("🏏 Cricket Player Auction Dashboard")
@@ -57,12 +59,17 @@ if unsold_players:
     if st.button("Sell Player"):
         if team_name:  # Ensure a team is selected
             st.session_state.sold_players[selected_player] = team_name
+            st.session_state.last_sold_player = selected_player
             st.success(f"✅ {selected_player} sold to {team_name}!")
             st.experimental_rerun()  # Refresh the page to pick next player
         else:
             st.error("⚠️ Please select a valid team before selling the player.")
 else:
     st.warning(f"⚠️ All players in **{category}** have been sold.")
+
+# Display last sold player to avoid re-selection issue
+if st.session_state.last_sold_player:
+    st.write(f"**Last sold player:** {st.session_state.last_sold_player}")
 
 # Display sold players in a table
 st.subheader("🏆 Sold Players")
