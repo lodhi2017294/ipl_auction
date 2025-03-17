@@ -1,16 +1,6 @@
 import streamlit as st
 import random
 import pandas as pd
-import gspread
-from oauth2client.service_account import ServiceAccountCredentials
-
-# Google Sheets Authentication using credentials file
-scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-creds = ServiceAccountCredentials.from_json_keyfile_name("velvety-folder-403710-48e75b97c08e.json", scope)
-client = gspread.authorize(creds)
-
-# Open Google Sheet
-sheet = client.open("IPL AUCTION").sheet1
 
 # Define player categories
 players = {
@@ -41,22 +31,17 @@ players = {
 # Allowed Teams
 teams = ["Vishal", "Vaibhav", "Vishnu", "Jaggu"]
 
-# Load sold players and team budgets from Google Sheets
-def load_data():
-    data = sheet.get_all_records()
-    sold_players = {row["Player"]: {"Team": row["Team"], "Bid": float(row["Bid"])} for row in data}
-    return sold_players
+# Initialize session state for sold players
+if "sold_players" not in st.session_state:
+    st.session_state.sold_players = {}
 
 st.title("🏏 Cricket Player Auction Dashboard")
-
-# Load sold players
-sold_players = load_data()
 
 # Category Selection
 category = st.selectbox("Select a category", list(players.keys()))
 
 # Get unsold players from the selected category
-unsold_players = [p for p in players[category] if p not in sold_players]
+unsold_players = [p for p in players[category] if p not in st.session_state.sold_players]
 
 if "current_player" not in st.session_state or st.button("Next Player ➡️"):
     if unsold_players:
@@ -77,11 +62,11 @@ if st.session_state.current_player:
     # Sell player button
     if st.button("Sell Player ✅"):
         if team_name:
-            # Save data to Google Sheets
-            sheet.append_row([selected_player, team_name, bid_amount])
+            # Save data to session state
+            st.session_state.sold_players[selected_player] = {"Team": team_name, "Bid": bid_amount}
             st.success(f"✅ {selected_player} sold to {team_name} for {bid_amount} crore!")
             st.session_state.current_player = None  # Reset current player for the next auction
-            st.experimental_rerun()
+            st.rerun()
         else:
             st.error("⚠️ Please select a valid team before selling the player.")
 else:
@@ -89,8 +74,8 @@ else:
 
 # Display sold players in a table
 st.subheader("🏆 Sold Players")
-if sold_players:
-    sold_df = pd.DataFrame([{"Player": k, "Team": v["Team"], "Bid": v["Bid"]} for k, v in sold_players.items()])
+if st.session_state.sold_players:
+    sold_df = pd.DataFrame([{"Player": k, "Team": v["Team"], "Bid": v["Bid"]} for k, v in st.session_state.sold_players.items()])
     st.dataframe(sold_df)
 else:
     st.info("No players have been sold yet.")
