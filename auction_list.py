@@ -35,7 +35,9 @@ teams = ["Vishal", "Vaibhav", "Vishnu", "Jaggu"]
 if "sold_players" not in st.session_state:
     st.session_state.sold_players = {}
 if "team_budget" not in st.session_state:
-    st.session_state.team_budget = {team: 120 for team in teams}  # 120 crore per team
+    st.session_state.team_budget = {team: 120.0 for team in teams}  # 120 crore per team
+if "current_player" not in st.session_state:
+    st.session_state.current_player = None
 
 st.title("🏏 Cricket Player Auction Dashboard")
 
@@ -45,25 +47,28 @@ category = st.selectbox("Select a category", list(players.keys()))
 # Get unsold players from the selected category
 unsold_players = [p for p in players[category] if p not in st.session_state.sold_players]
 
-if unsold_players:
-    # Pick a random unsold player
-    selected_player = random.choice(unsold_players)
+if st.session_state.current_player is None and unsold_players:
+    st.session_state.current_player = random.choice(unsold_players)
+
+if st.session_state.current_player:
+    selected_player = st.session_state.current_player
     st.subheader(f"🟢 Player up for auction: **{selected_player}**")
 
     # Dropdown for team selection
     team_name = st.selectbox("Select the team buying this player:", teams)
 
-    # Input for bid amount
-    bid_amount = st.number_input("Enter bid amount (in crores):", min_value=1, max_value=120, step=1)
+    # Input for bid amount (decimal values allowed)
+    bid_amount = st.number_input("Enter bid amount (in crores):", min_value=0.1, max_value=120.0, step=0.1)
 
     # Sell player button
     if st.button("Sell Player"):
-        if team_name and selected_player and bid_amount <= st.session_state.team_budget[team_name]:
+        if team_name and bid_amount <= st.session_state.team_budget[team_name]:
             # Deduct amount from team's budget
             st.session_state.team_budget[team_name] -= bid_amount
             st.session_state.sold_players[selected_player] = {"Team": team_name, "Bid": bid_amount}
             st.success(f"✅ {selected_player} sold to {team_name} for {bid_amount} crore!")
-            st.experimental_rerun()  # Refresh the page to pick next player
+            st.session_state.current_player = None  # Reset current player for the next auction
+            st.experimental_rerun()
         else:
             st.error("⚠️ Invalid bid amount or insufficient budget!")
 else:
