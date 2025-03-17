@@ -28,12 +28,14 @@ players = {
     ]
 }
 
-# Allowed Teams
-teams = ["Vishal", "Vaibhav", "Vishnu", "Jaggu"]
+# Allowed Teams and initial purse
+teams = {"Vishal": 120.0, "Vaibhav": 120.0, "Vishnu": 120.0, "Jaggu": 120.0}
 
-# Initialize session state for sold players
+# Initialize session state for sold players and team budgets
 if "sold_players" not in st.session_state:
     st.session_state.sold_players = {}
+if "team_budgets" not in st.session_state:
+    st.session_state.team_budgets = teams.copy()
 
 st.title("🏏 Cricket Player Auction Dashboard")
 
@@ -54,16 +56,17 @@ if st.session_state.current_player:
     st.subheader(f"🟢 Player up for auction: **{selected_player}**")
 
     # Dropdown for team selection
-    team_name = st.selectbox("Select the team buying this player:", teams)
+    team_name = st.selectbox("Select the team buying this player:", list(st.session_state.team_budgets.keys()))
 
     # Input for bid amount (decimal values allowed)
-    bid_amount = st.number_input("Enter bid amount (in crores):", min_value=0.1, max_value=120.0, step=0.1)
+    bid_amount = st.number_input("Enter bid amount (in crores):", min_value=0.1, max_value=st.session_state.team_budgets[team_name], step=0.1)
 
     # Sell player button
     if st.button("Sell Player ✅"):
-        if team_name:
+        if team_name and bid_amount <= st.session_state.team_budgets[team_name]:
             # Save data to session state
             st.session_state.sold_players[selected_player] = {"Team": team_name, "Bid": bid_amount}
+            st.session_state.team_budgets[team_name] -= bid_amount  # Deduct from team budget
             st.success(f"✅ {selected_player} sold to {team_name} for {bid_amount} crore!")
             st.session_state.current_player = None  # Reset current player for the next auction
             st.rerun()
@@ -79,3 +82,13 @@ if st.session_state.sold_players:
     st.dataframe(sold_df)
 else:
     st.info("No players have been sold yet.")
+
+# Display remaining team budgets
+st.subheader("💰 Remaining Purse of Teams")
+budget_df = pd.DataFrame(st.session_state.team_budgets.items(), columns=["Team", "Remaining Budget (crores)"])
+st.dataframe(budget_df)
+
+# Display remaining players
+st.subheader("📋 Remaining Players")
+remaining_players = [p for cat in players.values() for p in cat if p not in st.session_state.sold_players]
+st.write(", ".join(remaining_players) if remaining_players else "All players have been sold!")
