@@ -35,13 +35,14 @@ teams = {"Vishal": 120.0, "Vaibhav": 120.0, "Vishnu": 120.0, "Jaggu": 120.0}
 if not st.session_state.get("initialized", False):
     st.session_state.sold_players = {team: [] for team in teams.keys()}
     st.session_state.team_budgets = teams.copy()
+    st.session_state.remaining_players = {cat: list(players[cat]) for cat in players}
     st.session_state.initialized = True
 
 st.set_page_config(layout="wide")
 st.title("🏏 Cricket Player Auction Dashboard")
 
 # Layout setup
-header_col1, header_col2 = st.columns([3, 2])
+header_col1, header_col2, header_col3 = st.columns([3, 2, 3])
 
 with header_col1:
     st.subheader("🏆 Sold Players by Team")
@@ -53,6 +54,11 @@ with header_col1:
     st.dataframe(sold_df.fillna("-"), width=800)
 
 with header_col2:
+    st.subheader("💰 Remaining Purse of Teams")
+    budget_df = pd.DataFrame(st.session_state.team_budgets.items(), columns=["Team", "Remaining Budget (crores)"])
+    st.dataframe(budget_df, width=700)
+
+with header_col3:
     category = st.selectbox("Select a category", list(players.keys()))
     next_player_button = st.button("Next Player ➡️", key="next_player_button")
 
@@ -60,7 +66,7 @@ col1, col2 = st.columns([3, 2])
 
 with col1:
     # Get unsold players from the selected category
-    unsold_players = [p for p in players[category] if not any(p in team for team in st.session_state.sold_players.values())]
+    unsold_players = st.session_state.remaining_players[category]
 
     if "current_player" not in st.session_state or next_player_button:
         if unsold_players:
@@ -86,9 +92,9 @@ with col1:
                 st.session_state.team_budgets[team_name] -= bid_amount  # Deduct from team budget
                 
                 # Remove the player from the remaining players list
-                for cat in players:
-                    if selected_player in players[cat]:
-                        players[cat].remove(selected_player)
+                for cat in st.session_state.remaining_players:
+                    if selected_player in st.session_state.remaining_players[cat]:
+                        st.session_state.remaining_players[cat].remove(selected_player)
                         break
                 
                 st.success(f"✅ {selected_player} sold to {team_name} for {bid_amount} crore!")
@@ -99,17 +105,12 @@ with col1:
     elif len(unsold_players) == 0:
         st.warning(f"⚠️ All players in **{category}** have been sold.")
 
-    if all(len(team) == 0 for team in st.session_state.sold_players.values()) and all(len(p) == 0 for p in players.values()):
+    if all(len(team) == 0 for team in st.session_state.sold_players.values()) and all(len(p) == 0 for p in st.session_state.remaining_players.values()):
         st.success("🎉 All marquee players have been auctioned! No more players left.")
 
 with col2:
-    # Display remaining team budgets
-    st.subheader("💰 Remaining Purse of Teams")
-    budget_df = pd.DataFrame(st.session_state.team_budgets.items(), columns=["Team", "Remaining Budget (crores)"])
-    st.dataframe(budget_df, width=700)
-
     # Display remaining players category-wise
     st.subheader("📋 Remaining Players")
-    remaining_players_data = {cat: [p for p in cat_players if not any(p in team for team in st.session_state.sold_players.values())] for cat, cat_players in players.items()}
+    remaining_players_data = {cat: st.session_state.remaining_players[cat] for cat in st.session_state.remaining_players}
     remaining_df = pd.DataFrame(dict([(k, pd.Series(v)) for k, v in remaining_players_data.items()]))
     st.dataframe(remaining_df.fillna("-"), width=800)
