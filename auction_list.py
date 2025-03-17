@@ -84,6 +84,13 @@ with col1:
                 # Save data to session state
                 st.session_state.sold_players[team_name].append(f"{selected_player} ({bid_amount} cr)")
                 st.session_state.team_budgets[team_name] -= bid_amount  # Deduct from team budget
+                
+                # Remove the player from the remaining players list
+                for cat in players:
+                    if selected_player in players[cat]:
+                        players[cat].remove(selected_player)
+                        break
+                
                 st.success(f"✅ {selected_player} sold to {team_name} for {bid_amount} crore!")
                 st.session_state.current_player = None  # Reset current player for the next auction
                 st.rerun()
