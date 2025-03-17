@@ -1,15 +1,27 @@
-import os
-print(os.listdir())  # Check if google_credentials.json exists
-
 import streamlit as st
 import random
 import pandas as pd
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
+import json
+
+# Manually enter Google service account credentials
+service_account_info = {
+    "type": "service_account",
+    "project_id": "your-project-id",
+    "private_key_id": "your-private-key-id",
+    "private_key": "-----BEGIN PRIVATE KEY-----\nYOUR_PRIVATE_KEY\n-----END PRIVATE KEY-----\n",
+    "client_email": "your-service-account@your-project-id.iam.gserviceaccount.com",
+    "client_id": "your-client-id",
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "token_uri": "https://oauth2.googleapis.com/token",
+    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/your-service-account@your-project-id.iam.gserviceaccount.com"
+}
 
 # Google Sheets Authentication
-scope = ["https://docs.google.com/spreadsheets/d/1X3809pTOqFirLuzWTM7FlrAq0OTgIzmzS66oK1GcnzI/edit?gid=0#gid=0", "https://www.googleapis.com/auth/drive"]
-creds = ServiceAccountCredentials.from_json_keyfile_name("google_credentials.json", scope)
+scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+creds = ServiceAccountCredentials.from_json_keyfile_dict(service_account_info, scope)
 client = gspread.authorize(creds)
 
 # Open Google Sheet
