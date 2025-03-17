@@ -29,7 +29,7 @@ players = {
 }
 
 # Allowed Teams and initial purse
-teams = {"Vishal": 120.0, "Vaibhav": 120.0, "Vishnu": 120.0, "Jaggu": 120.0}
+teams = {"Vishal": 120.0, "Vaibhav": 120.0, "Vishnu": 120.0}
 
 # Reset session state on refresh
 if not st.session_state.get("initialized", False):
