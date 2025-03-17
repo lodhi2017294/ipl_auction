@@ -59,9 +59,10 @@ with col1:
     st.dataframe(remaining_df.fillna("-"), width=900)
 
 with col2:
-    st.subheader("💰 Remaining Purse of Teams")
+    st.subheader("💰 Remaining Purse of Teams (Editable)")
     budget_df = pd.DataFrame(st.session_state.team_budgets.items(), columns=["Team", "Remaining Budget (crores)"])
-    st.dataframe(budget_df, width=600)
+    edited_budget_df = st.data_editor(budget_df, width=600)
+    st.session_state.team_budgets = dict(zip(edited_budget_df["Team"], edited_budget_df["Remaining Budget (crores)"]))
     
     category = st.selectbox("Select a category", list(players.keys()))
     next_player_button = st.button("Next Player ➡️", key="next_player_button")
