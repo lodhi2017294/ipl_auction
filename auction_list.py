@@ -5,12 +5,12 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
 # Google Sheets Authentication using credentials file
-scope = ["https://docs.google.com/spreadsheets/d/1X3809pTOqFirLuzWTM7FlrAq0OTgIzmzS66oK1GcnzI/edit?gid=0#gid=0", "https://www.googleapis.com/auth/drive"]
+scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
 creds = ServiceAccountCredentials.from_json_keyfile_name("velvety-folder-403710-48e75b97c08e.json", scope)
 client = gspread.authorize(creds)
 
 # Open Google Sheet
-sheet = client.open("Player Auction").sheet1
+sheet = client.open("IPL AUCTION").sheet1
 
 # Define player categories
 players = {
