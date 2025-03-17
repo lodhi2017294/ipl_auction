@@ -2,7 +2,7 @@ import streamlit as st
 import random
 import pandas as pd
 
-# Define the player categories
+# Define player categories
 players = {
     "Batters": [
         "Virat Kohli", "Rohit Sharma", "Ruturaj Gaikwad", "Shubman Gill", "Yashasvi Jaiswal",
@@ -28,37 +28,46 @@ players = {
     ]
 }
 
-# Load or initialize auction state
+# Allowed Teams
+teams = ["Vishal", "Vaibhav", "Vishnu", "Jaggu"]
+
+# Initialize session state for tracking sold players
 if "sold_players" not in st.session_state:
     st.session_state.sold_players = {}
 
+# Streamlit UI
 st.title("🏏 Cricket Player Auction Dashboard")
 
-# Select category
+# Category Selection
 category = st.selectbox("Select a category", list(players.keys()))
 
-# Filter unsold players
+# Get unsold players from the selected category
 unsold_players = [p for p in players[category] if p not in st.session_state.sold_players]
 
+# Auction Logic
 if unsold_players:
     # Pick a random unsold player
     selected_player = random.choice(unsold_players)
-    st.subheader(f"🟢 Player up for auction: {selected_player}")
-    
-    # Enter team name
-    team_name = st.text_input("Enter the team buying this player:")
-    
+    st.subheader(f"🟢 Player up for auction: **{selected_player}**")
+
+    # Dropdown for team selection
+    team_name = st.selectbox("Select the team buying this player:", teams)
+
+    # Sell player button
     if st.button("Sell Player"):
-        if team_name:
+        if team_name:  # Ensure a team is selected
             st.session_state.sold_players[selected_player] = team_name
             st.success(f"✅ {selected_player} sold to {team_name}!")
-            st.experimental_rerun()
+            st.experimental_rerun()  # Refresh the page to pick next player
         else:
-            st.error("⚠️ Please enter a team name before selling the player.")
+            st.error("⚠️ Please select a valid team before selling the player.")
 else:
-    st.warning(f"All players in {category} have been sold.")
+    st.warning(f"⚠️ All players in **{category}** have been sold.")
 
-# Display auction results
+# Display sold players in a table
 st.subheader("🏆 Sold Players")
-sold_df = pd.DataFrame(list(st.session_state.sold_players.items()), columns=["Player", "Team"])
-st.dataframe(sold_df)
+if st.session_state.sold_players:
+    sold_df = pd.DataFrame(list(st.session_state.sold_players.items()), columns=["Player", "Team"])
+    st.dataframe(sold_df)
+else:
+    st.info("No players have been sold yet.")
