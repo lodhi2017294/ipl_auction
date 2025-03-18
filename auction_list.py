@@ -13,7 +13,7 @@ def load_player_data():
         return df
     else:
         st.error("⚠️ CSV file not found. Please check the file path!")
-        return pd.DataFrame()
+        return pd.DataFrame(columns=["Vishal", "Vaibhav", "Vishnu"])  # Ensure correct format
 
 # Load player data from CSV
 df = load_player_data()
@@ -64,7 +64,7 @@ teams = {"Vishal": 120.0, "Vaibhav": 120.0, "Vishnu": 120.0}
 
 # Deduct sold player amounts from initial budget
 for team in teams.keys():
-    total_spent = sum(bid for player, bid in sold_players.items() if player in df[team].values)
+    total_spent = sum(bid for player, bid in sold_players.items() if player in df[team].dropna().values)
     teams[team] -= total_spent
 
 # Initialize session state if not done
@@ -125,8 +125,8 @@ with col2:
                         st.session_state.remaining_players[cat].remove(selected_player)
                         break
 
-                # Update CSV with new sold player
-                df.loc[len(df)] = [selected_player]
+                # Update CSV with new sold player under the correct team
+                df.at[len(df), team_name] = f"{selected_player} ({bid_amount} cr)"
                 df.to_csv(CSV_FILE_PATH, index=False)
 
                 st.success(f"✅ {selected_player} sold to {team_name} for {bid_amount} crore!")
