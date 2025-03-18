@@ -85,6 +85,8 @@ with col1:
     st.subheader("🏆 Sold Players by Team (Editable)")
     sold_players_data = {team: st.session_state.sold_players[team] for team in teams.keys()}
     sold_df = pd.DataFrame(dict([(k, pd.Series(v)) for k, v in sold_players_data.items()]))
+    
+    # Fix: Use st.data_editor instead of experimental_data_editor
     edited_sold_df = st.data_editor(sold_df.fillna("-"), width=900)
 
     st.subheader("📋 Remaining Players")
@@ -94,7 +96,10 @@ with col1:
 with col2:
     st.subheader("💰 Remaining Purse of Teams (Editable)")
     budget_df = pd.DataFrame(st.session_state.team_budgets.items(), columns=["Team", "Remaining Budget (crores)"])
+    
+    # Fix: Use st.data_editor instead of experimental_data_editor
     edited_budget_df = st.data_editor(budget_df, width=600)
+    
     st.session_state.team_budgets = dict(zip(edited_budget_df["Team"], edited_budget_df["Remaining Budget (crores)"]))
 
     category = st.selectbox("Select a category", list(players.keys()))
