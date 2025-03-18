@@ -18,8 +18,14 @@ def load_player_data():
 # Load player data from CSV
 df = load_player_data()
 
-# Extract sold players from the CSV
-sold_players = set(df.values.flatten())  # Extract all sold player names from the CSV
+# Extract sold players and their amounts from the CSV
+sold_players = {}
+for col in df.columns:
+    for value in df[col].dropna():
+        if "(" in value and "cr" in value:  # Extract player name and bid amount
+            player_name = value.split("(")[0].strip()
+            bid_amount = float(value.split("(")[1].split("cr")[0].strip())
+            sold_players[player_name] = bid_amount
 
 # Define player categories with available players only
 players = {
@@ -56,9 +62,14 @@ remaining_players = {
 # Allowed Teams and initial purse
 teams = {"Vishal": 120.0, "Vaibhav": 120.0, "Vishnu": 120.0}
 
+# Deduct sold player amounts from initial budget
+for team in teams.keys():
+    total_spent = sum(bid for player, bid in sold_players.items() if player in df[team].values)
+    teams[team] -= total_spent
+
 # Initialize session state if not done
 if not st.session_state.get("initialized", False):
-    st.session_state.sold_players = {team: [] for team in teams.keys()}
+    st.session_state.sold_players = {team: list(df[team].dropna().values) for team in teams.keys()}
     st.session_state.team_budgets = teams.copy()
     st.session_state.remaining_players = remaining_players
     st.session_state.initialized = True
@@ -71,10 +82,7 @@ col1, col2 = st.columns([3, 2])
 
 with col1:
     st.subheader("🏆 Sold Players by Team (Editable)")
-    sold_players_data = {team: [] for team in teams.keys()}
-    for team, players_sold in st.session_state.sold_players.items():
-        sold_players_data[team] = players_sold
-
+    sold_players_data = {team: st.session_state.sold_players[team] for team in teams.keys()}
     sold_df = pd.DataFrame(dict([(k, pd.Series(v)) for k, v in sold_players_data.items()]))
     edited_sold_df = st.data_editor(sold_df.fillna("-"), width=900)
 
@@ -131,4 +139,3 @@ with col2:
 
     if all(len(team) == 0 for team in st.session_state.sold_players.values()) and all(len(p) == 0 for p in st.session_state.remaining_players.values()):
         st.success("🎉 All marquee players have been auctioned! No more players left.")
-
